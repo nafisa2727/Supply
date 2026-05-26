@@ -1,42 +1,33 @@
-# Campus Substitute 概念原型
+# Supply 交互静态版
 
-这是一个 Vite + React 前端原型项目，已适配 GitHub Pages。
+这是一个纯静态增强版，不需要 React、Vite、npm、Actions。
 
-## 本地运行
+它能实现：
+- 页面切换
+- 发布帖子
+- 模拟申请
+- 模拟接受并付款
+- 凭证文件名记录
+- 教师评价新增与搜索
+- 私信模拟发送
+- 后台查看
+- 数据保存到浏览器 localStorage
 
-```bash
-npm install
-npm run dev
-```
+它不能实现：
+- 多人共用数据库
+- 真实注册登录
+- 真实支付
+- 真实上传文件
+- 真实后台服务器
 
-运行后打开终端显示的本地地址，例如：
+## GitHub Pages 部署方式
 
-```text
-http://localhost:5173/
-```
-
-## GitHub Pages 部署
-
-本项目已经包含：
-
-```text
-vite.config.js
-.github/workflows/deploy.yml
-```
-
-上传到 `nafisa2727/Supply` 仓库后：
-
-1. 进入 GitHub 仓库 `Settings`
-2. 点击左侧 `Pages`
-3. 在 `Build and deployment` 中把 `Source` 改为 `GitHub Actions`
-4. 回到仓库首页，点击 `Actions`
-5. 等待 `Deploy to GitHub Pages` 运行完成
-6. 打开：
+1. 上传 `index.html` 到仓库根目录。
+2. GitHub 仓库进入 `Settings -> Pages`。
+3. Source 选择 `Deploy from a branch`。
+4. Branch 选择 `main`，Folder 选择 `/root`。
+5. 保存后访问：
 
 ```text
 https://nafisa2727.github.io/Supply/
 ```
-
-## 说明
-
-项目中的发布、接单、支付、上传、隐私展示等均为前端模拟，不包含真实后端、真实支付或真实文件上传。

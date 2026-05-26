@@ -1,12 +1,517 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Campus Substitute 概念原型</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Substitute 交互原型</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,"Microsoft YaHei","PingFang SC",Arial,sans-serif;background:#f6f8fb;color:#111827}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    input,textarea,select{width:100%;border:1px solid #dbe3ef;border-radius:14px;padding:11px 13px;background:#fff;outline:none}
+    input:focus,textarea:focus,select:focus{border-color:#64748b;box-shadow:0 0 0 4px #e2e8f0}
+    textarea{min-height:88px;resize:vertical}
+    h1,h2,h3,p{margin:0}
+    h1{font-size:21px;font-weight:900}
+    h2{font-size:20px;font-weight:900}
+    h3{font-size:16px;font-weight:900}
+    .topbar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid #e5e7eb;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:48px;height:48px;border-radius:18px;background:#111827;color:white;display:grid;place-items:center;font-size:22px;font-weight:900}
+    .muted{color:#64748b}.small{font-size:12px}
+    .badges,.chips{display:flex;gap:8px;flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;background:#f1f5f9;color:#475569;font-size:12px;font-weight:800}
+    .blue{background:#eff6ff;color:#1d4ed8}.green{background:#ecfdf5;color:#047857}.amber{background:#fffbeb;color:#b45309}.red{background:#fff1f2;color:#be123c}.purple{background:#f5f3ff;color:#6d28d9}
+    .layout{max-width:1420px;margin:0 auto;padding:24px;display:grid;grid-template-columns:255px minmax(0,1fr);gap:20px}
+    .sidebar{position:sticky;top:100px;height:fit-content}
+    .card{background:white;border:1px solid #eef2f7;border-radius:26px;padding:22px;box-shadow:0 12px 30px rgba(15,23,42,.05)}
+    .nav-card{padding:10px}
+    .nav{border:0;background:transparent;width:100%;border-radius:18px;padding:14px 15px;display:flex;align-items:center;gap:12px;color:#475569;transition:.2s;text-align:left}
+    .nav:hover{background:#f1f5f9}.nav.active{background:#111827;color:white}
+    .rule-card{margin-top:18px}.rule-card p{font-size:12px;line-height:1.8;color:#64748b;margin-top:8px}
+    .content-page{display:none}.content-page.active{display:block}
+    .stack{display:flex;flex-direction:column;gap:20px}
+    .two-col{display:grid;grid-template-columns:395px minmax(0,1fr);gap:20px}
+    .two-col.equal{grid-template-columns:1fr 1fr}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .stat span{color:#64748b;font-size:14px}.stat b{display:block;font-size:32px;margin-top:8px}
+    .form{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+    .label{display:block;font-size:14px;font-weight:900;color:#334155;margin-bottom:7px}
+    .primary,.secondary,.danger{border:0;border-radius:15px;padding:11px 16px;font-weight:900}
+    .primary{background:#111827;color:#fff}.secondary{background:#eef2f7;color:#111827}.danger{background:#e11d48;color:white}
+    .list{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+    .order,.message,.applicant,.empty{border:1px solid #eef2f7;border-radius:20px;padding:16px;background:white}
+    .order{width:100%;text-align:left;transition:.2s}.order:hover,.order.active{border-color:#111827;background:#f8fafc}
+    .between{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+    .price{background:#111827;color:white;border-radius:16px;padding:7px 11px;font-weight:900;white-space:nowrap}
+    .hero h2{font-size:28px;margin-top:12px}.hero p{line-height:1.8}
+    .pay-box{min-width:220px;background:#111827;color:white;border-radius:24px;padding:20px}
+    .pay-box span,.pay-box p{color:#cbd5e1;font-size:12px;line-height:1.8}.pay-box b{display:block;font-size:38px;margin:4px 0 8px}
+    .info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+    .info{background:#f8fafc;border-radius:18px;padding:15px}.info span{font-size:12px;color:#94a3b8}.info b{display:block;margin-top:5px;font-size:14px}
+    .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .proof{border:1px dashed #cbd5e1;background:#f8fafc;border-radius:20px;padding:18px;text-align:left;min-height:150px}
+    .proof .emoji{display:block;font-size:32px;margin-bottom:10px}.proof small{color:#64748b;display:block;margin-top:5px}
+    .toast{position:fixed;top:92px;left:50%;transform:translateX(-50%);z-index:40;background:#111827;color:white;border-radius:18px;padding:12px 18px;font-size:14px;font-weight:900;box-shadow:0 14px 40px rgba(15,23,42,.24);display:none}
+    .chat{min-height:540px;display:flex;flex-direction:column}.bubble{max-width:78%;padding:13px 16px;border-radius:22px;line-height:1.7;margin-top:18px;font-size:14px}.left{background:#f1f5f9;color:#334155}.right{background:#111827;color:white;margin-left:auto}
+    .chat-input{margin-top:auto;background:#f8fafc;padding:12px;border-radius:18px;display:flex;gap:10px}.chat-input button{width:90px}
+    .review-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.score{background:#111827;color:white;padding:9px 11px;border-radius:16px;font-weight:900;white-space:nowrap}
+    .profile-head{display:flex;align-items:center;gap:16px}.avatar{width:56px;height:56px;border-radius:20px;background:#111827;color:white;display:grid;place-items:center;font-size:22px;font-weight:900}.profile-head .badge{margin-left:auto}
+    .settings{display:flex;flex-direction:column;gap:12px;margin-top:18px}.setting{border:1px solid #eef2f7;border-radius:18px;padding:16px;display:flex;justify-content:space-between;gap:14px;align-items:center}.setting p{font-size:13px;color:#64748b;margin-top:4px}
+    .switch{width:46px;height:26px;background:#111827;border-radius:999px;position:relative;flex:0 0 auto}.switch i{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:4px;right:4px}
+    .upload{margin-top:20px;width:100%;border:1px dashed #cbd5e1;border-radius:26px;padding:34px 18px;background:#f8fafc;display:grid;place-items:center;gap:8px}.upload .emoji{font-size:42px}.backend{margin-top:18px;border-radius:18px;background:#f8fafc;padding:16px;color:#475569;line-height:1.8;font-size:14px}
+    .table{width:100%;border-collapse:collapse;margin-top:16px}.table th,.table td{padding:12px;border-bottom:1px solid #eef2f7;text-align:left;font-size:14px}.table th{color:#64748b}
+    @media(max-width:1100px){.layout,.two-col,.two-col.equal{grid-template-columns:1fr}.sidebar{position:static}.stats,.info-grid,.proof-grid,.review-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:720px){.topbar{padding:14px 16px}.badges{display:none}.layout{padding:16px}.stats,.info-grid,.proof-grid,.review-grid{grid-template-columns:1fr}.pay-box{width:100%}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">代</div>
+      <div>
+        <h1>Campus Substitute 交互原型</h1>
+        <p class="muted">私信 · 选择代课 · 教师评价 · 个人页面</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge amber">纯静态增强版</span>
+      <span class="badge blue">浏览器本地保存</span>
+      <span class="badge green">无需 Actions</span>
+    </div>
+  </header>
+
+  <div id="toast" class="toast"></div>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <div class="card nav-card">
+        <button class="nav" data-page="messages">💬 <b>私信页面</b></button>
+        <button class="nav active" data-page="orders">🎒 <b>选择代课页面</b></button>
+        <button class="nav" data-page="reviews">⭐ <b>教师评价页面</b></button>
+        <button class="nav" data-page="profile">👤 <b>个人页面</b></button>
+        <button class="nav" data-page="admin">🛠️ <b>后台查看</b></button>
+      </div>
+      <div class="card rule-card">
+        <h3>这个版本能做什么</h3>
+        <p>① 可以新增帖子，刷新后仍保存在本浏览器。</p>
+        <p>② 可以模拟申请、接受、付款、凭证反馈。</p>
+        <p>③ 可以新增教师评价并搜索。</p>
+        <p>④ 没有真实后端，不会多人同步。</p>
+      </div>
+    </aside>
+
+    <section class="content">
+      <section id="orders" class="content-page active">
+        <div class="stack">
+          <div class="stats">
+            <section class="card stat"><span>帖子数量</span><b id="statOrders">0</b></section>
+            <section class="card stat"><span>待接单</span><b id="statPending">0</b></section>
+            <section class="card stat"><span>平台抽成</span><b>7%</b></section>
+            <section class="card stat"><span>模拟成交额</span><b id="statAmount">¥0</b></section>
+          </div>
+
+          <div class="two-col">
+            <div class="stack">
+              <section class="card">
+                <h2>发布请代课帖子</h2>
+                <p class="muted">这里可以真实新增到当前浏览器页面里。</p>
+                <form id="orderForm" class="form">
+                  <label><span class="label">代课出价金额</span><input id="amount" type="number" placeholder="如：30" required /></label>
+                  <label><span class="label">课程时间</span><input id="time" placeholder="如：周三 10:00-11:40" required /></label>
+                  <label><span class="label">课程地点</span><input id="place" placeholder="如：X2321 教室" required /></label>
+                  <label><span class="label">课程名称</span><input id="course" placeholder="如：管理学原理" required /></label>
+                  <label><span class="label">性别要求</span><select id="gender"><option>不限</option><option>男</option><option>女</option></select></label>
+                  <label><span class="label">说明栏</span><textarea id="note" placeholder="作业说明、签到情况说明、课堂要求等……"></textarea></label>
+                  <button class="primary" type="submit">发布请代课帖子</button>
+                </form>
+              </section>
+
+              <section class="card">
+                <div class="between">
+                  <div>
+                    <h2>代课帖子列表</h2>
+                    <p class="muted">点击帖子查看详情。</p>
+                  </div>
+                  <button class="secondary" id="resetOrders">重置示例</button>
+                </div>
+                <div id="orderList" class="list"></div>
+              </section>
+            </div>
+
+            <div id="orderDetail" class="stack"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="messages" class="content-page">
+        <div class="two-col">
+          <section class="card">
+            <h2>私信页面</h2>
+            <p class="muted">可以发送模拟消息，保存在本浏览器。</p>
+            <div id="messageList" class="list"></div>
+          </section>
+          <section class="card chat">
+            <h2>当前会话：李同学</h2>
+            <p class="muted">订单 DK-20260526-001 相关沟通</p>
+            <div id="chatBox"></div>
+            <form id="chatForm" class="chat-input">
+              <input id="chatInput" placeholder="输入私信内容……" />
+              <button class="primary">发送</button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <section id="reviews" class="content-page">
+        <div class="two-col">
+          <section class="card">
+            <h2>发表教师授课评价</h2>
+            <p class="muted">新增评价会保存到当前浏览器。</p>
+            <form id="reviewForm" class="form">
+              <label><span class="label">老师姓名</span><input id="teacher" placeholder="如：王老师" required /></label>
+              <label><span class="label">课程名称</span><input id="reviewCourse" placeholder="如：管理学原理" required /></label>
+              <label><span class="label">评分</span><select id="score"><option value="5">5 分</option><option value="4">4 分</option><option value="3">3 分</option><option value="2">2 分</option><option value="1">1 分</option></select></label>
+              <label><span class="label">评价标签</span><input id="tags" placeholder="讲课清楚，考勤严格，作业较多" /></label>
+              <label><span class="label">评价内容</span><textarea id="reviewText" placeholder="描述授课风格、作业情况、考试特点等……" required></textarea></label>
+              <button class="primary" type="submit">提交评价</button>
+            </form>
+          </section>
+          <section class="stack">
+            <div class="card">
+              <h2>查询老师评价</h2>
+              <p class="muted">输入老师姓名、课程名或标签搜索。</p>
+              <input id="reviewSearch" placeholder="搜索老师姓名、课程名、标签……" />
+            </div>
+            <div id="reviewList" class="review-grid"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="profile" class="content-page">
+        <div class="two-col">
+          <section class="stack">
+            <div class="card profile-head">
+              <div class="avatar">我</div>
+              <div><h2>当前用户</h2><p class="muted">学生身份认证用户，信息仅为脱敏展示。</p></div>
+              <span class="badge green">已认证</span>
+            </div>
+            <div class="card">
+              <h2>投向设置 / 通知设置</h2>
+              <div class="settings">
+                <div class="setting"><div><b>接单消息提醒</b><p>有新的代课帖子或申请消息时提醒</p></div><span class="switch"><i></i></span></div>
+                <div class="setting"><div><b>付款状态提醒</b><p>订单被接受、付款成功、任务完成时提醒</p></div><span class="switch"><i></i></span></div>
+                <div class="setting"><div><b>隐私保护</b><p>姓名、学号、专业等仅在后台模拟可见</p></div><span class="switch"><i></i></span></div>
+              </div>
+            </div>
+          </section>
+          <section class="card">
+            <h2>学生证认证</h2>
+            <p class="muted">这里可以选择文件，但不会上传到任何服务器，只显示文件名。</p>
+            <label class="upload">
+              <span class="emoji">🪪</span>
+              <b>选择学生证文件</b>
+              <small id="studentCardName">尚未选择文件</small>
+              <input id="studentCard" type="file" accept="image/*" style="display:none" />
+            </label>
+            <div class="backend">后台可查字段展示：姓名、学号、专业、认证状态、注册时间、订单记录、争议记录。</div>
+          </section>
+        </div>
+      </section>
+
+      <section id="admin" class="content-page">
+        <div class="card">
+          <div class="between">
+            <div>
+              <h2>后台查看</h2>
+              <p class="muted">展示当前浏览器保存的数据。</p>
+            </div>
+            <button class="danger" id="clearAll">清空本地数据</button>
+          </div>
+          <h3 style="margin-top:22px">订单数据</h3>
+          <table class="table"><thead><tr><th>ID</th><th>课程</th><th>金额</th><th>时间</th><th>地点</th><th>状态</th></tr></thead><tbody id="adminOrders"></tbody></table>
+          <h3 style="margin-top:22px">评价数据</h3>
+          <table class="table"><thead><tr><th>老师</th><th>课程</th><th>评分</th><th>标签</th></tr></thead><tbody id="adminReviews"></tbody></table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+<script>
+const FEE_RATE = 0.07;
+const LS_ORDERS = "supply_demo_orders_v2";
+const LS_REVIEWS = "supply_demo_reviews_v2";
+const LS_MESSAGES = "supply_demo_messages_v2";
+
+const seedOrders = [
+  { id:"DK-20260526-001", amount:30, course:"管理学原理", time:"周三 10:00-11:40", place:"X2321 教室", gender:"不限", status:"待接单", note:"需要记录老师布置的作业和课堂重点。", applicant:{name:"李同学", gender:"男", major:"信息管理", id:"2023****631", intro:"时间合适，可按要求提交课堂记录。"}, proofStart:"", proofEnd:"", finishNote:"" },
+  { id:"DK-20260526-002", amount:45, course:"数据库原理", time:"周五 14:00-15:40", place:"实验楼 506", gender:"男", status:"已匹配，待确认", note:"请说明实验课作业要求和签到情况。", applicant:null, proofStart:"", proofEnd:"", finishNote:"" },
+  { id:"DK-20260526-003", amount:25, course:"高等数学 A", time:"周一 08:20-10:00", place:"J1402 教室", gender:"女", status:"待接单", note:"请补充课堂作业说明。", applicant:null, proofStart:"", proofEnd:"", finishNote:"" }
+];
+const seedReviews = [
+  {teacher:"王老师", course:"管理学原理", score:4.7, tags:["讲课清楚","考勤一般","作业适中"], content:"课堂节奏较稳定，会说明重点内容。适合提前看教材，课堂上跟着框架记录。"},
+  {teacher:"陈老师", course:"数据库原理", score:4.1, tags:["考勤严格","实验要求高","讲案例多"], content:"实验课要求比较细，建议提前配置环境。平时分和实验提交关系较大。"},
+  {teacher:"刘老师", course:"高等数学 A", score:3.9, tags:["节奏较快","板书较多","考试基础"], content:"课堂信息量比较大，最好提前预习。作业题和期末复习联系较明显。"}
+];
+const seedMessages = [
+  {from:"李同学", text:"我可以申请这个订单，性别男，专业信息管理。", side:"left"},
+  {from:"我", text:"好的，我先看一下你的申请说明和认证状态。", side:"right"},
+  {from:"李同学", text:"系统显示已认证，学号和姓名后台可查，前台只展示脱敏信息。", side:"left"}
+];
+
+let orders = load(LS_ORDERS, seedOrders);
+let reviews = load(LS_REVIEWS, seedReviews);
+let messages = load(LS_MESSAGES, seedMessages);
+let selectedOrderId = orders[0]?.id;
+
+function load(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
+}
+function save() {
+  localStorage.setItem(LS_ORDERS, JSON.stringify(orders));
+  localStorage.setItem(LS_REVIEWS, JSON.stringify(reviews));
+  localStorage.setItem(LS_MESSAGES, JSON.stringify(messages));
+}
+function money(n) { return "¥" + Number(n || 0).toFixed(Number(n)%1===0?0:2); }
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.display = "block";
+  clearTimeout(window.__toast);
+  window.__toast = setTimeout(()=> el.style.display = "none", 2300);
+}
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+document.querySelectorAll(".nav").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".nav").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".content-page").forEach(x => x.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.page).classList.add("active");
+    renderAll();
+  });
+});
+
+document.getElementById("orderForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const order = {
+    id: "DK-" + new Date().toISOString().slice(0,10).replaceAll("-","") + "-" + Math.floor(Math.random()*900+100),
+    amount: Number(document.getElementById("amount").value),
+    course: document.getElementById("course").value,
+    time: document.getElementById("time").value,
+    place: document.getElementById("place").value,
+    gender: document.getElementById("gender").value,
+    status: "待接单",
+    note: document.getElementById("note").value || "暂无补充说明。",
+    applicant: null,
+    proofStart:"",
+    proofEnd:"",
+    finishNote:""
+  };
+  orders.unshift(order);
+  selectedOrderId = order.id;
+  save();
+  e.target.reset();
+  renderAll();
+  toast("已发布到当前浏览器的帖子列表");
+});
+
+document.getElementById("resetOrders").addEventListener("click", () => {
+  orders = JSON.parse(JSON.stringify(seedOrders));
+  selectedOrderId = orders[0].id;
+  save();
+  renderAll();
+  toast("已重置示例帖子");
+});
+
+document.getElementById("reviewForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const item = {
+    teacher: document.getElementById("teacher").value,
+    course: document.getElementById("reviewCourse").value,
+    score: Number(document.getElementById("score").value),
+    tags: document.getElementById("tags").value.split(/[，,]/).map(x=>x.trim()).filter(Boolean),
+    content: document.getElementById("reviewText").value
+  };
+  reviews.unshift(item);
+  save();
+  e.target.reset();
+  renderReviews();
+  renderAdmin();
+  toast("评价已保存到当前浏览器");
+});
+
+document.getElementById("reviewSearch").addEventListener("input", renderReviews);
+
+document.getElementById("chatForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if (!text) return;
+  messages.push({from:"我", text, side:"right"});
+  input.value = "";
+  save();
+  renderMessages();
+});
+
+document.getElementById("studentCard").addEventListener("change", e => {
+  const file = e.target.files[0];
+  document.getElementById("studentCardName").textContent = file ? file.name : "尚未选择文件";
+  toast("已选择文件，但不会上传到服务器");
+});
+
+document.getElementById("clearAll").addEventListener("click", () => {
+  if (!confirm("确定清空本浏览器保存的数据吗？")) return;
+  localStorage.removeItem(LS_ORDERS);
+  localStorage.removeItem(LS_REVIEWS);
+  localStorage.removeItem(LS_MESSAGES);
+  orders = JSON.parse(JSON.stringify(seedOrders));
+  reviews = JSON.parse(JSON.stringify(seedReviews));
+  messages = JSON.parse(JSON.stringify(seedMessages));
+  selectedOrderId = orders[0].id;
+  save();
+  renderAll();
+  toast("已清空并恢复示例数据");
+});
+
+function renderOrders() {
+  document.getElementById("statOrders").textContent = orders.length;
+  document.getElementById("statPending").textContent = orders.filter(o => o.status === "待接单").length;
+  document.getElementById("statAmount").textContent = money(orders.reduce((sum,o)=>sum+Number(o.amount||0),0));
+
+  const list = document.getElementById("orderList");
+  list.innerHTML = orders.map(o => `
+    <button class="order ${o.id===selectedOrderId?'active':''}" data-id="${esc(o.id)}">
+      <div class="between">
+        <div><b>请代课：${esc(o.course)}</b><p class="muted small">${esc(o.time)} · ${esc(o.place)}</p></div>
+        <span class="price">${money(o.amount)}</span>
+      </div>
+      <div class="chips" style="margin-top:10px"><span class="badge blue">${esc(o.status)}</span><span class="badge">性别：${esc(o.gender)}</span></div>
+    </button>
+  `).join("");
+  list.querySelectorAll(".order").forEach(btn => {
+    btn.addEventListener("click", () => { selectedOrderId = btn.dataset.id; renderOrders(); renderDetail(); });
+  });
+  renderDetail();
+}
+
+function renderDetail() {
+  const o = orders.find(x => x.id === selectedOrderId) || orders[0];
+  if (!o) return;
+  const fee = Number(o.amount || 0) * FEE_RATE;
+  const income = Number(o.amount || 0) - fee;
+  document.getElementById("orderDetail").innerHTML = `
+    <section class="card hero">
+      <div class="between">
+        <div>
+          <div class="chips"><span class="badge blue">${esc(o.status)}</span><span class="badge green">发布者：2024****018</span></div>
+          <h2>请代课：${esc(o.course)}</h2>
+          <p class="muted">${esc(o.note)}</p>
+        </div>
+        <div class="pay-box"><span>出价金额</span><b>${money(o.amount)}</b><p>平台中介费 7%：${money(fee)}</p><p>接单人预计收入：${money(income)}</p></div>
+      </div>
+      <div class="info-grid">
+        <div class="info"><span>课程名称</span><b>${esc(o.course)}</b></div>
+        <div class="info"><span>课程时间</span><b>${esc(o.time)}</b></div>
+        <div class="info"><span>课程地点</span><b>${esc(o.place)}</b></div>
+        <div class="info"><span>性别要求</span><b>${esc(o.gender)}</b></div>
+      </div>
+    </section>
+
+    <div class="two-col equal">
+      <section class="card">
+        <h2>去代课申请</h2><p class="muted">点击后会为该帖子添加一个模拟申请人。</p>
+        <div class="form">
+          <label><span class="label">性别</span><select id="applyGender"><option>男</option><option>女</option><option>不展示</option></select></label>
+          <label><span class="label">专业</span><input id="applyMajor" placeholder="如：信息管理" /></label>
+          <label><span class="label">申请说明</span><textarea id="applyIntro" placeholder="说明自己为什么适合接这个帖子……"></textarea></label>
+          <button class="primary" id="applyBtn">去代课</button>
+        </div>
+      </section>
+      <section class="card">
+        <h2>申请人信息</h2><p class="muted">发布者可查看申请并模拟接受。</p>
+        ${o.applicant ? `
+          <div class="applicant">
+            <div class="between"><div><b>${esc(o.applicant.name)}</b><p class="muted small">${esc(o.applicant.gender)} · ${esc(o.applicant.major)} · ${esc(o.applicant.id)}</p></div><span class="badge green">已认证</span></div>
+            <p>${esc(o.applicant.intro)}</p>
+            <div class="chips"><button class="primary" id="acceptBtn">接受并付款</button><button class="secondary" id="rejectBtn">拒绝</button></div>
+          </div>` : `<div class="empty">暂无申请人。</div>`}
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="between"><div><h2>现场凭证与下课反馈</h2><p class="muted">可以选择本地文件名和填写说明，不上传服务器。</p></div><span class="badge purple">凭证流程</span></div>
+      <div class="proof-grid">
+        <label class="proof"><span class="emoji">📷</span><b>到课照片</b><small id="proofStartName">${esc(o.proofStart || "尚未选择文件")}</small><input id="proofStart" type="file" accept="image/*" style="display:none"></label>
+        <label class="proof"><span class="emoji">📷</span><b>下课照片</b><small id="proofEndName">${esc(o.proofEnd || "尚未选择文件")}</small><input id="proofEnd" type="file" accept="image/*" style="display:none"></label>
+        <div class="proof"><b>说明栏</b><textarea id="finishNote" placeholder="课上作业说明、签到情况说明、其他补充……">${esc(o.finishNote || "")}</textarea><button class="secondary" id="saveFinish" style="margin-top:10px">保存说明</button></div>
+      </div>
+    </section>
+  `;
+
+  document.getElementById("applyBtn").addEventListener("click", () => {
+    o.applicant = {
+      name: "当前接单人",
+      gender: document.getElementById("applyGender").value,
+      major: document.getElementById("applyMajor").value || "未填写专业",
+      id: "2023****631",
+      intro: document.getElementById("applyIntro").value || "时间合适，可按要求完成。"
+    };
+    o.status = "有申请人";
+    save(); renderOrders(); renderDetail(); toast("已添加模拟申请人");
+  });
+  const accept = document.getElementById("acceptBtn");
+  if (accept) accept.addEventListener("click", () => { o.status = "已匹配，待完成"; save(); renderAll(); toast("已模拟接受并付款"); });
+  const reject = document.getElementById("rejectBtn");
+  if (reject) reject.addEventListener("click", () => { o.applicant = null; o.status = "待接单"; save(); renderAll(); toast("已拒绝申请"); });
+
+  document.getElementById("proofStart").addEventListener("change", e => {
+    o.proofStart = e.target.files[0]?.name || "";
+    save(); renderDetail(); toast("已记录到课照片文件名，本地不上传");
+  });
+  document.getElementById("proofEnd").addEventListener("change", e => {
+    o.proofEnd = e.target.files[0]?.name || "";
+    save(); renderDetail(); toast("已记录下课照片文件名，本地不上传");
+  });
+  document.getElementById("saveFinish").addEventListener("click", () => {
+    o.finishNote = document.getElementById("finishNote").value;
+    save(); renderAdmin(); toast("说明栏已保存到本浏览器");
+  });
+}
+
+function renderReviews() {
+  const kw = document.getElementById("reviewSearch")?.value?.trim() || "";
+  const items = reviews.filter(r => !kw || [r.teacher, r.course, r.content, ...(r.tags || [])].some(x => String(x).includes(kw)));
+  document.getElementById("reviewList").innerHTML = items.map(r => `
+    <div class="card">
+      <div class="between"><div><h3>${esc(r.teacher)}</h3><p class="muted">${esc(r.course)}</p></div><span class="score">${esc(r.score)} / 5</span></div>
+      <div class="chips" style="margin-top:14px">${(r.tags || []).map(t=>`<span class="badge blue">${esc(t)}</span>`).join("")}</div>
+      <p style="margin-top:14px;line-height:1.8">${esc(r.content)}</p>
+    </div>
+  `).join("");
+}
+
+function renderMessages() {
+  document.getElementById("messageList").innerHTML = `
+    <div class="message"><div class="between"><b>李同学</b><span class="muted small">14:20</span></div><p>${esc(messages.at(-1)?.text || "暂无消息")}</p><span class="badge red">2 条未读</span></div>
+    <div class="message"><div class="between"><b>系统通知</b><span class="muted small">13:02</span></div><p>身份认证信息仅用于模拟展示，当前原型不保存真实学生证。</p></div>
+    <div class="message"><div class="between"><b>陈同学</b><span class="muted small">昨天</span></div><p>我已经填写了课堂说明栏，记得确认订单状态。</p></div>`;
+  document.getElementById("chatBox").innerHTML = messages.map(m => `<div class="bubble ${m.side === "right" ? "right" : "left"}">${esc(m.text)}</div>`).join("");
+}
+
+function renderAdmin() {
+  document.getElementById("adminOrders").innerHTML = orders.map(o => `<tr><td>${esc(o.id)}</td><td>${esc(o.course)}</td><td>${money(o.amount)}</td><td>${esc(o.time)}</td><td>${esc(o.place)}</td><td>${esc(o.status)}</td></tr>`).join("");
+  document.getElementById("adminReviews").innerHTML = reviews.map(r => `<tr><td>${esc(r.teacher)}</td><td>${esc(r.course)}</td><td>${esc(r.score)}</td><td>${esc((r.tags||[]).join("，"))}</td></tr>`).join("");
+}
+
+function renderAll() {
+  renderOrders();
+  renderReviews();
+  renderMessages();
+  renderAdmin();
+}
+renderAll();
+</script>
+</body>
 </html>
